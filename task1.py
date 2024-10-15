@@ -1,4 +1,5 @@
 import sqlite3
+import random
 
 db_connection = sqlite3.connect('task1.db')
 cursor = db_connection.cursor()
@@ -52,15 +53,15 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS Exams (
             ExamID INTEGER PRIMARY KEY AUTOINCREMENT, 
             ExamDate DATE NOT NULL,
-            CourseID INTEGER,
             MaxScore INTEGER NOT NULL,
+            CourseID INTEGER,
             FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
         )
         """)
         print("Таблица 'Exams' успешно создана.")
     except sqlite3.Error as err:
         print(f"Ошибка при создании таблицы 'Exams': {err}")
-
+    
     try:
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Grades (
@@ -78,13 +79,52 @@ def create_tables():
 
 create_tables()
 
-def AddToTable(table_name):
-    if table_name == "Students":
-        AddToStudents()
-    elif table_name == "Teachers":
-        AddToTeachers()
-    elif table_name == "Courses":
-        AddToCourses()
+def NumberOfStrochka(table_name):
+    cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+    row_count = cursor.fetchone()[0]
+    return row_count
+
+def RandomAVERYTHING():
+    Names = ["Alpha", "Beta", "Gamma", "Delta", "Zeta", "Teta", "Lambda", "Sigma", "REAL Sigma"]
+    Surnames = ["Andrewev", "Andreyev", "Andreiev", "Andoreiev", "Alalodreyev", "_☺§_+ev", "Androidev", "Iphonev", "Linuxev"]
+    Birthdates = ["1990-01-01", "1980-02-02", "1970-03-03", "1960-04-04", "1950-05-05", "1940-06-06", "1930-07-07", "1920-08-08", "1940-09-09", "2000-01-01", "2008-10-16", "1950-10-10", "1960-11-12"]
+    Departments = ["First", "Second", "Third", "Fourth", "Fifth"]
+    CourseNames = ["Math", "Physics", "Chemistry", "Biology", "English", "Russian", "German", "French", "Italian"]
+    DepartmentNames = ["Computer Science", "Mathematics", "Physics", "Biology", "Chemistry", "Engineering", "Psychology", "History", "Economics", "Sociology"]
+
+    for _ in range(random.randint(200, 500)):
+        cursor.execute("""
+        INSERT INTO Students (Name, Surname, DateOfBirth, Department)
+        VALUES (?, ?, ?, ?)""", 
+        (random.choice(Names), random.choice(Surnames), random.choice(Birthdates), random.choice(Departments)))
+
+    for _ in range(random.randint(30, 100)):
+        cursor.execute("""
+        INSERT INTO Teachers (Name, Surname, Department)
+        VALUES (?, ?, ?)""", 
+        (random.choice(Names), random.choice(Surnames), random.choice(DepartmentNames)))
+    
+    for _ in range(random.randint(10, 20)):
+        cursor.execute("""
+        INSERT INTO Courses (Title, Description, TeacherID)
+        VALUES (?, ?, ?)""", 
+        (random.choice(CourseNames), "Description for " + random.choice(CourseNames), random.randint(1, NumberOfStrochka("Teachers"))))
+    
+    for _ in range(random.randint(20, 100)):
+        cursor.execute("""
+        INSERT INTO Exams (ExamDate, MaxScore, CourseID)
+        VALUES (?, ?, ?)""", 
+        (random.choice(Birthdates), random.randint(110, 120), random.randint(1, NumberOfStrochka("Courses"))))
+    
+    for _ in range(random.randint(100, 200)):
+        cursor.execute("""
+        INSERT INTO Grades (StudentID, ExamID, Score)
+        VALUES (?, ?, ?)""", 
+        (random.randint(1, NumberOfStrochka("Students")), random.randint(1, NumberOfStrochka("Exams")), random.randint(1, 100)))
+
+    db_connection.commit()
+
+RandomAVERYTHING()
 
 def AddToStudents():
     insert = "INSERT INTO Students (Name, Surname, Department, DateOfBirth) VALUES (?, ?, ?, ?)"
@@ -333,5 +373,94 @@ def GetCoursesByTeacher():
             print(f"ID: {course[0]}, Название: {course[1]}, Описание: {course[2]}")
     else:
         print(f"Нет курсов, читаемых преподавателем с ID {teacher_id}.")
+
+# №6
+
+def GetStudentsByCourse():
+    course_id = int(input("Введите ID курса для получения списка студентов: "))
+    cursor.execute("""
+    SELECT Students.StudentID, Students.Name, Students.Surname, Students.Birthdate
+    FROM Students 
+    INNER JOIN Enrollments ON Students.StudentID = Enrollments.StudentID 
+    WHERE Enrollments.CourseID =?""", (course_id,))
+    students = cursor.fetchall()
+
+    if students:
+        print(f"Студенты, изучающие курс с ID {course_id}:")
+        for student in students:
+            print(f"ID: {student[0]}, Имя: {student[1]}, Фамилия: {student[2]}, Дата рождения: {student[3]}")
+    else:
+        print(f"Нет студентов, изучающих курс с ID {course_id}.")
+
+# №7
+
+def GetStudentsScoreByCourse():
+    course_id = int(input("Введите ID курса для получения списка студентов с их баллами: "))
+    cursor.execute("""
+    SELECT Students.StudentID, Students.Name, Students.Surname, Students.Birthdate, Grades.Score 
+    FROM Students 
+    INNER JOIN Grades ON Students.StudentID = Grades.StudentID 
+    WHERE Grades.CourseID =?""", (course_id,))
+    students = cursor.fetchall()
+
+# №8
+
+def GetStudentAverageCourseScore():
+    student_id = int(input("Введите ID студента для получения среднего балла: "))
+    course_id = int(input("Введите ID курса для получения среднего балла: "))
+    try:
+        cursor.execute("""
+        SELECT avg(Score) AS AverageScore
+        FROM Grades g
+        JOIN Exams e ON g.ExamID = e.ExamID
+        JOIN Courses c ON e.CourseID = c.CourseID
+        WHERE g.StudentID = ? AND c.CourseID = ?""", (student_id, course_id))
+        
+        result = cursor.fetchone()
+        average_score = result[0] if result[0] is not None else 0
+        print(f"Средний балл студента с ID {student_id} по курсу с ID {course_id}: {average_score:.2f}")
+    except sqlite3.Error as err:
+        print(f"Ошибка при получении среднего балла: {err}")
+
+# №9
+
+def GetStudentAverageScore():
+    student_id = int(input("Введите ID студента для получения среднего балла в целом: "))
+    try:
+        cursor.execute("""
+        SELECT avg(Score) AS AverageScore
+        FROM Grades
+        WHERE StudentID = ?""", (student_id,)) 
+        result = cursor.fetchone()
+        overall_average = result[0] if result[0] is not None else 0
+        print(f"Средний балл студента с ID {student_id} в целом: {overall_average:.2f}")
+    except sqlite3.Error as err:
+        print(f"Ошибка при получении среднего балла: {err}")
+
+# №10
+
+def GetDepartmentAverageScore():
+    department = input("Введите название факультета для получения среднего балла: ")
+    try:
+        cursor.execute("""
+        SELECT avg(Score) AS AverageScore
+        FROM Grades
+        JOIN Students ON Grades.StudentID = Students.StudentID
+        JOIN Courses ON Grades.CourseID = Courses.CourseID
+        WHERE Students.Department = ?""", (department,))
+        
+        result = cursor.fetchone()
+        department_average = result[0] if result[0] is not None else 0
+        print(f"Средний балл в целом по факультету '{department}': {department_average:.2f}")
+    except sqlite3.Error as err:
+        print(f"Ошибка при получении среднего балла: {err}")
+
+def AddToTable(table_name):
+    if table_name == "Students":
+        AddToStudents()
+    elif table_name == "Teachers":
+        AddToTeachers()
+    elif table_name == "Courses":
+        AddToCourses()
 
 db_connection.close()
