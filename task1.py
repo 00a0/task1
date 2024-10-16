@@ -84,49 +84,69 @@ def NumberOfStrochka(table_name):
     row_count = cursor.fetchone()[0]
     return row_count
 
+def RandomBirthDate():
+    year = random.randint(1950, 2020)
+    month = random.randint(1, 12)
+    day = random.randint(1, 28)
+    date = str(year) + "-" + str(month) + "-" + str(day)
+    return date
+
+def RandomExamDate():
+    year = random.randint(2021, 2025)
+    month = random.randint(1, 12)
+    day = random.randint(1, 28)
+    date = str(year) + "-" + str(month) + "-" + str(day)
+    return date
+
 def RandomAVERYTHING():
     Names = ["Alpha", "Beta", "Gamma", "Delta", "Zeta", "Teta", "Lambda", "Sigma", "REAL Sigma"]
     Surnames = ["Andrewev", "Andreyev", "Andreiev", "Andoreiev", "Alalodreyev", "_☺§_+ev", "Androidev", "Iphonev", "Linuxev"]
-    Birthdates = ["1990-01-01", "1980-02-02", "1970-03-03", "1960-04-04", "1950-05-05", "1940-06-06", "1930-07-07", "1920-08-08", "1940-09-09", "2000-01-01", "2008-10-16", "1950-10-10", "1960-11-12"]
+    Birthdates = []
+    ExamDates = []
+    for i in range(3000):
+        Birthdates.append(RandomBirthDate())
+    for i in range(1000):
+        ExamDates.append(RandomExamDate())
     Departments = ["First", "Second", "Third", "Fourth", "Fifth"]
     CourseNames = ["Math", "Physics", "Chemistry", "Biology", "English", "Russian", "German", "French", "Italian"]
     DepartmentNames = ["Computer Science", "Mathematics", "Physics", "Biology", "Chemistry", "Engineering", "Psychology", "History", "Economics", "Sociology"]
 
-    for _ in range(random.randint(200, 500)):
+    for i in range(random.randint(200, 500)):
         cursor.execute("""
         INSERT INTO Students (Name, Surname, DateOfBirth, Department)
         VALUES (?, ?, ?, ?)""", 
         (random.choice(Names), random.choice(Surnames), random.choice(Birthdates), random.choice(Departments)))
 
-    for _ in range(random.randint(30, 100)):
+    for i in range(random.randint(30, 100)):
         cursor.execute("""
         INSERT INTO Teachers (Name, Surname, Department)
         VALUES (?, ?, ?)""", 
         (random.choice(Names), random.choice(Surnames), random.choice(DepartmentNames)))
     
-    for _ in range(random.randint(10, 20)):
+    for i in range(random.randint(NumberOfStrochka("Teachers") * 2, NumberOfStrochka("Teachers")*4)):
+        course_name = random.choice(CourseNames)
         cursor.execute("""
         INSERT INTO Courses (Title, Description, TeacherID)
         VALUES (?, ?, ?)""", 
-        (random.choice(CourseNames), "Description for " + random.choice(CourseNames), random.randint(1, NumberOfStrochka("Teachers"))))
+        (course_name, "Description for " + course_name, random.randint(1, NumberOfStrochka("Teachers"))))
     
-    for _ in range(random.randint(20, 100)):
+    for i in range(random.randint(20, 100)):
         cursor.execute("""
         INSERT INTO Exams (ExamDate, MaxScore, CourseID)
         VALUES (?, ?, ?)""", 
-        (random.choice(Birthdates), random.randint(110, 120), random.randint(1, NumberOfStrochka("Courses"))))
+        (random.choice(ExamDates), random.randint(101, 110), random.randint(1, NumberOfStrochka("Courses"))))
     
-    for _ in range(random.randint(100, 200)):
+    for i in range(random.randint(3000, 5000)):
         cursor.execute("""
         INSERT INTO Grades (StudentID, ExamID, Score)
         VALUES (?, ?, ?)""", 
-        (random.randint(1, NumberOfStrochka("Students")), random.randint(1, NumberOfStrochka("Exams")), random.randint(1, 100)))
+        (random.randint(1, NumberOfStrochka("Students")), random.randint(1, NumberOfStrochka("Exams")), random.randint(40, 100)))
 
     db_connection.commit()
 
 RandomAVERYTHING()
 
-def AddToStudents():
+def AddStudent():
     insert = "INSERT INTO Students (Name, Surname, Department, DateOfBirth) VALUES (?, ?, ?, ?)"
     to_insert = [(input("Введите имя студента: "), 
                   input("Введите фамилию студента: "), 
@@ -139,7 +159,7 @@ def AddToStudents():
     except sqlite3.Error as err:
         print(f"Ошибка при вставке данных в 'Students': {err}")
 
-def AddToTeachers():
+def AddTeacher():
     insert = "INSERT INTO Teachers (Name, Surname, Department) VALUES (?, ?, ?)"
     to_insert = [(input("Введите имя преподавателя: "), 
                   input("Введите фамилию преподавателя: "), 
@@ -151,7 +171,7 @@ def AddToTeachers():
     except sqlite3.Error as err:
         print(f"Ошибка при вставке данных в 'Teachers': {err}")
 
-def AddToCourses():
+def AddCourse():
     insert = "INSERT INTO Courses (Title, Description, TeacherID) VALUES (?, ?, ?)"
     to_insert = [(input("Введите название курса: "), 
                   input("Введите описание курса: "), 
@@ -162,6 +182,30 @@ def AddToCourses():
         print(f"{cursor.rowcount} записей успешно добавлены в таблицу 'Courses'.")
     except sqlite3.Error as err:
         print(f"Ошибка при вставке данных в 'Courses': {err}")
+
+def AddExam():
+    insert = "INSERT INTO Exams (ExamDate, CourseID, MaxScore) VALUES (?, ?, ?)"
+    to_insert = [(input("Введите дату экзамена (YYYY-MM-DD): "),
+                  int(input("Введите ID курса: ")),
+                  int(input("Введите максимальный балл экзамена: ")))]
+    try:
+        cursor.executemany(insert, to_insert)
+        db_connection.commit()
+        print(f"{cursor.rowcount} записей успешно добавлены в таблицу 'Exams'.")
+    except sqlite3.Error as err:
+        print(f"Ошибка при вставке данных в 'Exams': {err}")
+
+def AddGrade():
+    insert = "INSERT INTO Grades (StudentID, ExamID, Score) VALUES (?,?, ?)"
+    to_insert = [(int(input("Введите ID студента: ")),
+                  int(input("Введите ID экзамена: ")),
+                  int(input("Введите оценку: ")))]
+    try:
+        cursor.executemany(insert, to_insert)
+        db_connection.commit()
+        print(f"{cursor.rowcount} записей успешно добавлены в таблицу 'Grades'.")
+    except sqlite3.Error as err:
+        print(f"Ошибка при вставке данных в 'Grades': {err}")
 
 # №2
 
@@ -314,8 +358,7 @@ def DeleteExam():
     except sqlite3.Error as err:
         print(f"Ошибка при удалении экзамена: {err}")
 
-update_option = input("Хотите обновить информацию? (yes/no): ").lower()
-if update_option == 'yes':
+def Update():
     while True:
         update_choice = input("Что вы хотите обновить? (Students/Teachers/Courses/exit): ").lower()
         if update_choice == "students":
@@ -329,8 +372,7 @@ if update_option == 'yes':
         else:
             print("Неверный выбор.")
 
-delete_option = input("Хотите удалить информацию? (yes/no): ").lower()
-if delete_option == 'yes':
+def Delete():
     while True:
         delete_choice = input("Что вы хотите удалить? (Students/Teachers/Courses/Exams/exit): ").lower()
         if delete_choice == "students":
@@ -345,6 +387,25 @@ if delete_option == 'yes':
             break
         else:
             print("Неверный выбор.")
+
+def Add():
+    while True:
+        add_choice = input("Что вы хотите добавить? (Students/Teachers/Courses/Exams/Grades/exit): ").lower()
+        if add_choice == "students":
+            AddStudent()
+        elif add_choice == "teachers":
+            AddTeacher()
+        elif add_choice == "courses":
+            AddCourse()
+        elif add_choice == "exams":
+            AddExam()
+        elif add_choice == "grades":
+            AddGrade()
+        elif add_choice == "exit":
+            break
+        else:
+            print("Неверный выбор.")
+
 
 # №4
 
@@ -379,10 +440,12 @@ def GetCoursesByTeacher():
 def GetStudentsByCourse():
     course_id = int(input("Введите ID курса для получения списка студентов: "))
     cursor.execute("""
-    SELECT Students.StudentID, Students.Name, Students.Surname, Students.Birthdate
+    SELECT Students.StudentID, Students.Name, Students.Surname, Students.DateOfBirth
     FROM Students 
-    INNER JOIN Enrollments ON Students.StudentID = Enrollments.StudentID 
-    WHERE Enrollments.CourseID =?""", (course_id,))
+    INNER JOIN Grades ON Students.StudentID = Grades.StudentID 
+    INNER JOIN Exams ON Grades.ExamID = Exams.ExamID
+    INNER JOIN Courses ON Exams.CourseID = Courses.CourseID
+    WHERE Courses.CourseID =?""", (course_id,))
     students = cursor.fetchall()
 
     if students:
@@ -415,7 +478,6 @@ def GetStudentAverageCourseScore():
         JOIN Exams e ON g.ExamID = e.ExamID
         JOIN Courses c ON e.CourseID = c.CourseID
         WHERE g.StudentID = ? AND c.CourseID = ?""", (student_id, course_id))
-        
         result = cursor.fetchone()
         average_score = result[0] if result[0] is not None else 0
         print(f"Средний балл студента с ID {student_id} по курсу с ID {course_id}: {average_score:.2f}")
@@ -446,7 +508,8 @@ def GetDepartmentAverageScore():
         SELECT avg(Score) AS AverageScore
         FROM Grades
         JOIN Students ON Grades.StudentID = Students.StudentID
-        JOIN Courses ON Grades.CourseID = Courses.CourseID
+        JOIN Exams ON Grades.ExamID = Exams.ExamID
+        JOIN Courses ON Exams.CourseID = Courses.CourseID
         WHERE Students.Department = ?""", (department,))
         
         result = cursor.fetchone()
@@ -455,12 +518,43 @@ def GetDepartmentAverageScore():
     except sqlite3.Error as err:
         print(f"Ошибка при получении среднего балла: {err}")
 
-def AddToTable(table_name):
-    if table_name == "Students":
-        AddToStudents()
-    elif table_name == "Teachers":
-        AddToTeachers()
-    elif table_name == "Courses":
-        AddToCourses()
+def UserInput():
+    while True:
+        print("\n Меню (1/2/3/4/5/6/7/8/9/10/exit):")
+        print("1. Добавление нового студента, преподавателя, курса, экзамена и оценки.")
+        print("2. Изменение информации о студентах, преподавателях и курсах.")
+        print("3. Удаление студентов, преподавателей, курсов и экзаменов.")
+        print("4. Получение списка студентов по факультету.")
+        print("5. Получение списка курсов, читаемых определенным преподавателем.")
+        print("6. Получение списка студентов, зачисленных на конкретный курс.")
+        print("7. Получение оценок студентов по определенному курсу.")
+        print("8. Средний балл студента по определенному курсу.")
+        print("9. Средний балл студента в целом.")
+        print("10. Средний балл по факультету.")
+        while True:
+            user_answer = input("")
+            if user_answer == "1":
+                Add()
+            elif user_answer == "2":
+                Update()
+            elif user_answer == "3":
+                Delete()
+            elif user_answer == "4":
+                GetStudentsByDepartment()
+            elif user_answer == "5":
+                GetCoursesByTeacher()
+            elif user_answer == "6":
+                GetStudentsByCourse()
+            elif user_answer == "7":
+                GetStudentsScoreByCourse()
+            elif user_answer == "8":
+                GetStudentAverageCourseScore()
+            elif user_answer == "9":
+                GetStudentAverageScore()
+            elif user_answer == "10":
+                GetDepartmentAverageScore()
+            elif user_answer == "exit":
+                break
+UserInput()
 
 db_connection.close()
