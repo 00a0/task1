@@ -111,7 +111,7 @@ def RandomAVERYTHING():
     CourseNames = ["Math", "Physics", "Chemistry", "Biology", "English", "Russian", "German", "French", "Italian"]
     DepartmentNames = ["Computer Science", "Mathematics", "Physics", "Biology", "Chemistry", "Engineering", "Psychology", "History", "Economics", "Sociology"]
 
-    for i in range(random.randint(200, 500)):
+    for i in range(random.randint(200, 300)):
         cursor.execute("""
         INSERT INTO Students (Name, Surname, DateOfBirth, Department)
         VALUES (?, ?, ?, ?)""", 
@@ -136,7 +136,7 @@ def RandomAVERYTHING():
         VALUES (?, ?, ?)""", 
         (random.choice(ExamDates), random.randint(101, 110), random.randint(1, NumberOfStrochka("Courses"))))
     
-    for i in range(random.randint(3000, 5000)):
+    for i in range(random.randint(400, 500)):
         cursor.execute("""
         INSERT INTO Grades (StudentID, ExamID, Score)
         VALUES (?, ?, ?)""", 
