@@ -4,6 +4,8 @@ import random
 db_connection = sqlite3.connect('task1.db')
 cursor = db_connection.cursor()
 
+cursor.execute("PRAGMA foreign_keys = ON")
+
 # №1
 
 def create_tables():
@@ -41,7 +43,7 @@ def create_tables():
             Title TEXT NOT NULL,  
             Description TEXT,
             TeacherID INTEGER,
-            FOREIGN KEY (TeacherID) REFERENCES Teachers(TeacherID)
+            FOREIGN KEY (TeacherID) REFERENCES Teachers(TeacherID) ON DELETE CASCADE
         )
         """)
         print("Таблица 'Courses' успешно создана.")
@@ -55,7 +57,7 @@ def create_tables():
             ExamDate DATE NOT NULL,
             MaxScore INTEGER NOT NULL,
             CourseID INTEGER,
-            FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
+            FOREIGN KEY (CourseID) REFERENCES Courses(CourseID) ON DELETE CASCADE
         )
         """)
         print("Таблица 'Exams' успешно создана.")
@@ -69,8 +71,8 @@ def create_tables():
             StudentID INTEGER,
             ExamID INTEGER,
             Score INTEGER NOT NULL,
-            FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
-            FOREIGN KEY (ExamID) REFERENCES Exams(ExamID)
+            FOREIGN KEY (StudentID) REFERENCES Students(StudentID) ON DELETE CASCADE,
+            FOREIGN KEY (ExamID) REFERENCES Exams(ExamID) ON DELETE CASCADE
         )
         """)
         print("Таблица 'Grades' успешно создана.")
@@ -85,14 +87,14 @@ def NumberOfStrochka(table_name):
     return row_count
 
 def RandomBirthDate():
-    year = random.randint(1950, 2020)
+    year = random.randint(1950, 2002)
     month = random.randint(1, 12)
     day = random.randint(1, 28)
     date = str(year) + "-" + str(month) + "-" + str(day)
     return date
 
 def RandomExamDate():
-    year = random.randint(2021, 2025)
+    year = random.randint(2021, 2024)
     month = random.randint(1, 12)
     day = random.randint(1, 28)
     date = str(year) + "-" + str(month) + "-" + str(day)
@@ -111,32 +113,32 @@ def RandomAVERYTHING():
     CourseNames = ["Math", "Physics", "Chemistry", "Biology", "English", "Russian", "German", "French", "Italian"]
     DepartmentNames = ["Computer Science", "Mathematics", "Physics", "Biology", "Chemistry", "Engineering", "Psychology", "History", "Economics", "Sociology"]
 
-    for i in range(random.randint(200, 300)):
+    for i in range(random.randint(150, 200)):
         cursor.execute("""
         INSERT INTO Students (Name, Surname, DateOfBirth, Department)
         VALUES (?, ?, ?, ?)""", 
         (random.choice(Names), random.choice(Surnames), random.choice(Birthdates), random.choice(Departments)))
 
-    for i in range(random.randint(30, 100)):
+    for i in range(random.randint(10, 20)):
         cursor.execute("""
         INSERT INTO Teachers (Name, Surname, Department)
         VALUES (?, ?, ?)""", 
         (random.choice(Names), random.choice(Surnames), random.choice(DepartmentNames)))
     
-    for i in range(random.randint(NumberOfStrochka("Teachers") * 2, NumberOfStrochka("Teachers")*4)):
+    for i in range(random.randint(NumberOfStrochka("Teachers")//2 , NumberOfStrochka("Teachers"))):
         course_name = random.choice(CourseNames)
         cursor.execute("""
         INSERT INTO Courses (Title, Description, TeacherID)
         VALUES (?, ?, ?)""", 
         (course_name, "Description for " + course_name, random.randint(1, NumberOfStrochka("Teachers"))))
     
-    for i in range(random.randint(20, 100)):
+    for i in range(random.randint(450, 500)):
         cursor.execute("""
         INSERT INTO Exams (ExamDate, MaxScore, CourseID)
         VALUES (?, ?, ?)""", 
         (random.choice(ExamDates), random.randint(101, 110), random.randint(1, NumberOfStrochka("Courses"))))
     
-    for i in range(random.randint(400, 500)):
+    for i in range(NumberOfStrochka("Exams")):
         cursor.execute("""
         INSERT INTO Grades (StudentID, ExamID, Score)
         VALUES (?, ?, ?)""", 
@@ -357,6 +359,7 @@ def DeleteExam():
             print(f"Экзамен с ID {exam_id} не найден.")
     except sqlite3.Error as err:
         print(f"Ошибка при удалении экзамена: {err}")
+
 
 def Update():
     while True:
