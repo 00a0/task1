@@ -157,7 +157,7 @@ def AddStudent():
     try:
         cursor.executemany(insert, to_insert)
         db_connection.commit()
-        print(f"{cursor.rowcount} записей успешно добавлены в таблицу 'Students'.")
+        print(f"Запись успешно добавлена в таблицу 'Students'.")
     except sqlite3.Error as err:
         print(f"Ошибка при вставке данных в 'Students': {err}")
 
@@ -169,7 +169,7 @@ def AddTeacher():
     try:
         cursor.executemany(insert, to_insert)
         db_connection.commit()
-        print(f"{cursor.rowcount} записей успешно добавлены в таблицу 'Teachers'.")
+        print(f"Запись успешно добавлена в таблицу 'Teachers'.")
     except sqlite3.Error as err:
         print(f"Ошибка при вставке данных в 'Teachers': {err}")
 
@@ -181,7 +181,7 @@ def AddCourse():
     try:
         cursor.executemany(insert, to_insert)
         db_connection.commit()
-        print(f"{cursor.rowcount} записей успешно добавлены в таблицу 'Courses'.")
+        print(f"Запись успешно добавлена в таблицу 'Courses'.")
     except sqlite3.Error as err:
         print(f"Ошибка при вставке данных в 'Courses': {err}")
 
@@ -193,7 +193,7 @@ def AddExam():
     try:
         cursor.executemany(insert, to_insert)
         db_connection.commit()
-        print(f"{cursor.rowcount} записей успешно добавлены в таблицу 'Exams'.")
+        print(f"Запись успешно добавлена в таблицу 'Exams'.")
     except sqlite3.Error as err:
         print(f"Ошибка при вставке данных в 'Exams': {err}")
 
@@ -205,14 +205,18 @@ def AddGrade():
     try:
         cursor.executemany(insert, to_insert)
         db_connection.commit()
-        print(f"{cursor.rowcount} записей успешно добавлены в таблицу 'Grades'.")
+        print(f"Запись успешно добавлена в таблицу 'Grades'.")
     except sqlite3.Error as err:
         print(f"Ошибка при вставке данных в 'Grades': {err}")
 
 # №2
 
 def UpdateStudent():
-    student_id = int(input("Введите ID студента для обновления: "))
+    try:
+        student_id = int(input("Введите ID студента для обновления: "))
+    except ValueError:
+        print("Вводите ID числом, пожалуйста")
+        student_id = int(input("Введите ID преподавателя для обновления: "))
     new_name = input("Введите новое имя (оставьте пустым, если не хотите менять): ")
     new_surname = input("Введите новую фамилию (оставьте пустым, если не хотите менять): ")
     new_department = input("Введите новый факультет (оставьте пустым, если не хотите менять): ")
@@ -248,7 +252,11 @@ def UpdateStudent():
         print("Нет данных для обновления.")
 
 def UpdateTeacher():
-    teacher_id = int(input("Введите ID преподавателя для обновления: "))
+    try:
+        teacher_id = int(input("Введите ID преподавателя для обновления: "))
+    except ValueError:
+        print("Вводите ID числом, пожалуйста")
+        teacher_id = int(input("Введите ID преподавателя для обновления: "))
     new_name = input("Введите новое имя (оставьте пустым, если не хотите менять): ")
     new_surname = input("Введите новую фамилию (оставьте пустым, если не хотите менять): ")
     new_department = input("Введите новую кафедру (оставьте пустым, если не хотите менять): ")
@@ -280,7 +288,11 @@ def UpdateTeacher():
         print("Нет данных для обновления.")
 
 def UpdateCourse():
-    course_id = int(input("Введите ID курса для обновления: "))
+    try:
+        course_id = int(input("Введите ID курса для обновления: "))
+    except ValueError:
+        print("Вводите ID числом, пожалуйста")
+        course_id = int(input("Введите ID преподавателя для обновления: "))
     new_title = input("Введите новое название курса (оставьте пустым, если не хотите менять): ")
     new_description = input("Введите новое описание курса (оставьте пустым, если не хотите менять): ")
     new_teacher_id = input("Введите новый ID преподавателя (оставьте пустым, если не хотите менять): ")
@@ -313,7 +325,11 @@ def UpdateCourse():
 
 # №3
 def DeleteStudent():
-    student_id = int(input("Введите ID студента для удаления: "))
+    try:
+        student_id = int(input("Введите ID студента для удаления: "))
+    except ValueError:
+        print("Вводите ID числом, пожалуйста")
+        student_id = int(input("Введите ID студента для удаления: "))
     try:
         cursor.execute("DELETE FROM Students WHERE StudentID = ?", (student_id,))
         db_connection.commit()
@@ -325,7 +341,11 @@ def DeleteStudent():
         print(f"Ошибка при удалении студента: {err}")
 
 def DeleteTeacher():
-    teacher_id = int(input("Введите ID преподавателя для удаления: "))
+    try:
+        teacher_id = int(input("Введите ID преподавателя для удаления: "))
+    except ValueError:
+        print("Вводите ID числом, пожалуйста")
+        teacher_id = int(input("Введите ID преподавателя для удаления: "))
     try:
         cursor.execute("DELETE FROM Teachers WHERE TeacherID = ?", (teacher_id,))
         db_connection.commit()
@@ -337,7 +357,11 @@ def DeleteTeacher():
         print(f"Ошибка при удалении преподавателя: {err}")
 
 def DeleteCourse():
-    course_id = int(input("Введите ID курса для удаления: "))
+    try:
+        course_id = int(input("Введите ID курса для удаления: "))
+    except ValueError:
+        print("Вводите ID числом, пожалуйста")
+        course_id = int(input("Введите ID курса для удаления: "))
     try:
         cursor.execute("DELETE FROM Courses WHERE CourseID = ?", (course_id,))
         db_connection.commit()
@@ -349,7 +373,11 @@ def DeleteCourse():
         print(f"Ошибка при удалении курса: {err}")
 
 def DeleteExam():
-    exam_id = int(input("Введите ID экзамена для удаления: "))
+    try:
+        exam_id = int(input("Введите ID экзамена для удаления: "))
+    except ValueError:
+        print("Вводите ID числом, пожалуйста")
+        exam_id = int(input("Введите ID экзамена для удаления: "))
     try:
         cursor.execute("DELETE FROM Exams WHERE ExamID = ?", (exam_id,))
         db_connection.commit()
@@ -360,10 +388,9 @@ def DeleteExam():
     except sqlite3.Error as err:
         print(f"Ошибка при удалении экзамена: {err}")
 
-
 def Update():
     while True:
-        update_choice = input("Что вы хотите обновить? (Students/Teachers/Courses/exit): ").lower()
+        update_choice = input("Что вы хотите обновить? (Students/Teachers/Courses/exit): ").lower() 
         if update_choice == "students":
             UpdateStudent()
         elif update_choice == "teachers":
@@ -394,6 +421,7 @@ def Delete():
 def Add():
     while True:
         add_choice = input("Что вы хотите добавить? (Students/Teachers/Courses/Exams/Grades/exit): ").lower()
+        
         if add_choice == "students":
             AddStudent()
         elif add_choice == "teachers":
@@ -409,65 +437,84 @@ def Add():
         else:
             print("Неверный выбор.")
 
-
 # №4
 
 def GetStudentsByDepartment():
     department = input("Введите название факультета для получения списка студентов: ")
-    cursor.execute("SELECT * FROM Students WHERE Department = ?", (department,))
-    students = cursor.fetchall()
+    try:
+        cursor.execute("SELECT * FROM Students WHERE Department = ?", (department,))
+        students = cursor.fetchall()
 
-    if students:
-        print(f"Студенты факультета '{department}':")
-        for student in students:
-            print(f"ID: {student[0]}, Имя: {student[1]}, Фамилия: {student[2]}, Дата рождения: {student[4]}")
-    else:
-        print(f"Нет студентов на факультете '{department}'.")
+        if students:
+            print(f"Студенты факультета '{department}':")
+            for student in students:
+                print(f"ID: {student[0]}, Имя: {student[1]}, Фамилия: {student[2]}, Дата рождения: {student[4]}")
+        else:
+            print(f"Нет студентов на факультете '{department}'.")
+    except:
+        print("Ошибка при получении студентов факультета.")
 
 # №5
 
 def GetCoursesByTeacher():
     teacher_id = int(input("Введите ID преподавателя для получения списка курсов: "))
-    cursor.execute("SELECT * FROM Courses WHERE TeacherID = ?", (teacher_id,))
-    courses = cursor.fetchall()
+    try:
+        cursor.execute("SELECT * FROM Courses WHERE TeacherID = ?", (teacher_id,))
+        courses = cursor.fetchall()
 
-    if courses:
-        print(f"Курсы, читаемые преподавателем с ID {teacher_id}:")
-        for course in courses:
-            print(f"ID: {course[0]}, Название: {course[1]}, Описание: {course[2]}")
-    else:
-        print(f"Нет курсов, читаемых преподавателем с ID {teacher_id}.")
+        if courses:
+            print(f"Курсы, читаемые преподавателем с ID {teacher_id}:")
+            for course in courses:
+                print(f"ID: {course[0]}, Название: {course[1]}, Описание: {course[2]}")
+        else:
+            print(f"Нет курсов, читаемых преподавателем с ID {teacher_id}.")
+    except sqlite3.Error as err:
+        print(f"Ошибка при получении курсов преподавателем: {err}")
 
 # №6
 
 def GetStudentsByCourse():
     course_id = int(input("Введите ID курса для получения списка студентов: "))
-    cursor.execute("""
-    SELECT Students.StudentID, Students.Name, Students.Surname, Students.DateOfBirth
-    FROM Students 
-    INNER JOIN Grades ON Students.StudentID = Grades.StudentID 
-    INNER JOIN Exams ON Grades.ExamID = Exams.ExamID
-    INNER JOIN Courses ON Exams.CourseID = Courses.CourseID
-    WHERE Courses.CourseID =?""", (course_id,))
-    students = cursor.fetchall()
+    try:
+        cursor.execute("""
+        SELECT Students.StudentID, Students.Name, Students.Surname, Students.DateOfBirth
+        FROM Students 
+        JOIN Grades ON Students.StudentID = Grades.StudentID 
+        JOIN Exams ON Grades.ExamID = Exams.ExamID
+        JOIN Courses ON Exams.CourseID = Courses.CourseID
+        WHERE Courses.CourseID =?""", (course_id,))
+        students = cursor.fetchall()
 
-    if students:
-        print(f"Студенты, изучающие курс с ID {course_id}:")
-        for student in students:
-            print(f"ID: {student[0]}, Имя: {student[1]}, Фамилия: {student[2]}, Дата рождения: {student[3]}")
-    else:
-        print(f"Нет студентов, изучающих курс с ID {course_id}.")
+        if students:
+            print(f"Студенты, изучающие курс с ID {course_id}:")
+            for student in students:
+                print(f"ID: {student[0]}, Имя: {student[1]}, Фамилия: {student[2]}, Дата рождения: {student[3]}")
+        else:
+            print(f"Нет студентов, изучающих курс с ID {course_id}.")
+    except sqlite3.Error as err:
+        print(f"Ошибка при получении студентов из курса: {err}")
 
 # №7
 
 def GetStudentsScoreByCourse():
     course_id = int(input("Введите ID курса для получения списка студентов с их баллами: "))
-    cursor.execute("""
-    SELECT Students.StudentID, Students.Name, Students.Surname, Students.Birthdate, Grades.Score 
-    FROM Students 
-    INNER JOIN Grades ON Students.StudentID = Grades.StudentID 
-    WHERE Grades.CourseID =?""", (course_id,))
-    students = cursor.fetchall()
+    try:
+        cursor.execute("""
+        SELECT Students.StudentID, Students.Name, Students.Surname, Students.DateOfBirth, Grades.Score 
+        FROM Students 
+        JOIN Grades ON Students.StudentID = Grades.StudentID 
+        JOIN Exams ON Grades.ExamID = Exams.ExamID
+        WHERE Exams.CourseID =?""", (course_id,))
+        students = cursor.fetchall()
+
+        if students:
+            print(f"Студенты, изучающие курс с ID {course_id} с баллами:")
+            for student in students:
+                print(f"ID: {student[0]}, Имя: {student[1]}, Фамилия: {student[2]}, Дата рождения: {student[3]}, Балл: {student[4]}")
+        else:
+            print(f"Нет студентов, изучающих курс с ID {course_id}.")
+    except sqlite3.Error as err:
+        print(f"Ошибка при получении баллов студентов: {err}")
 
 # №8
 
@@ -477,10 +524,10 @@ def GetStudentAverageCourseScore():
     try:
         cursor.execute("""
         SELECT avg(Score) AS AverageScore
-        FROM Grades g
-        JOIN Exams e ON g.ExamID = e.ExamID
-        JOIN Courses c ON e.CourseID = c.CourseID
-        WHERE g.StudentID = ? AND c.CourseID = ?""", (student_id, course_id))
+        FROM Grades 
+        JOIN Exams ON Grades.ExamID = Exams.ExamID
+        JOIN Courses ON Exams.CourseID = Courses.CourseID
+        WHERE Grades.StudentID = ? AND Courses.CourseID = ?""", (student_id, course_id))
         result = cursor.fetchone()
         average_score = result[0] if result[0] is not None else 0
         print(f"Средний балл студента с ID {student_id} по курсу с ID {course_id}: {average_score:.2f}")
@@ -522,7 +569,6 @@ def GetDepartmentAverageScore():
         print(f"Ошибка при получении среднего балла: {err}")
 
 def UserInput():
-    while True:
         print("\n Меню (1/2/3/4/5/6/7/8/9/10/exit):")
         print("1. Добавление нового студента, преподавателя, курса, экзамена и оценки.")
         print("2. Изменение информации о студентах, преподавателях и курсах.")
@@ -534,30 +580,45 @@ def UserInput():
         print("8. Средний балл студента по определенному курсу.")
         print("9. Средний балл студента в целом.")
         print("10. Средний балл по факультету.")
-        while True:
-            user_answer = input("")
-            if user_answer == "1":
-                Add()
-            elif user_answer == "2":
-                Update()
-            elif user_answer == "3":
-                Delete()
-            elif user_answer == "4":
-                GetStudentsByDepartment()
-            elif user_answer == "5":
-                GetCoursesByTeacher()
-            elif user_answer == "6":
-                GetStudentsByCourse()
-            elif user_answer == "7":
-                GetStudentsScoreByCourse()
-            elif user_answer == "8":
-                GetStudentAverageCourseScore()
-            elif user_answer == "9":
-                GetStudentAverageScore()
-            elif user_answer == "10":
-                GetDepartmentAverageScore()
-            elif user_answer == "exit":
-                break
+        user_answer = input("Введите запрос из Меню: ").lower()
+        while user_answer != "exit":         
+            match user_answer:
+                case "1":
+                    Add()
+                    user_answer = input("Введите запрос из Меню: ").lower()
+                case "2":
+                    Update()
+                    user_answer = input("Введите запрос из Меню: ").lower()
+                case "3":
+                    Delete()
+                    user_answer = input("Введите запрос из Меню: ").lower()
+                case "4":
+                    GetStudentsByDepartment()
+                    user_answer = input("Введите запрос из Меню: ").lower()
+                case "5":
+                    GetCoursesByTeacher()
+                    user_answer = input("Введите запрос из Меню: ").lower()
+                case "6":
+                    GetStudentsByCourse()
+                    user_answer = input("Введите запрос из Меню: ").lower()
+                case "7":
+                    GetStudentsScoreByCourse()
+                    user_answer = input("Введите запрос из Меню: ").lower()
+                case "8":
+                    GetStudentAverageCourseScore()
+                    user_answer = input("Введите запрос из Меню: ").lower()
+                case "9":
+                    GetStudentAverageScore()
+                    user_answer = input("Введите запрос из Меню: ").lower()
+                case "10":
+                    GetDepartmentAverageScore()
+                    user_answer = input("Введите запрос из Меню: ").lower()
+                case _:
+                    print("Некорректный ввод. Попробуйте снова.")
+                    user_answer = input("Введите запрос из Меню: ").lower()
+
+print("\nБаза данных была Случайно сгенерированна!")
+
 UserInput()
 
 db_connection.close()
